@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("javax.jms:jms-api:2.0.1")
+    implementation("jakarta.jms:jakarta.jms-api:3.1.0")
     implementation("org.apache.activemq:activemq-broker:6.1.1")
     testImplementation(kotlin("test"))
 }
@@ -21,7 +21,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(20)
 }
 
 application {
