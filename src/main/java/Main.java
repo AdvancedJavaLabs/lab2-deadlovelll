@@ -1,5 +1,8 @@
+import serial.SerialImplementation;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Lab 3");
+        SerialImplementation serial = new SerialImplementation();
+        serial.run();
     }
 }

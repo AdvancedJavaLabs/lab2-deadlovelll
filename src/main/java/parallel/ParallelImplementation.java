@@ -1,4 +1,6 @@
 package parallel;
 
-public class ParallelImplementation {
-}
+import java.io.File;
+import java.util.Scanner;
+
+public class ParallelImplementation {}
