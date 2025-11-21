@@ -11,6 +11,5 @@ bin/
 venv/
 __pycache__/
 *.pyc
-src_py/
 
 *.log
