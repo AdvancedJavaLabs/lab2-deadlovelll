@@ -1,0 +1,1 @@
+STOPWORDS = {"and", "the", "in", "on", "with", "but", "or", "a", "an", "of"}

@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeoutException;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import shared.Producer;
 
 public class SerialProducer {
@@ -22,16 +21,10 @@ public class SerialProducer {
             TimeoutException
     {
         String[] pathArray = {
-                "src/main/java/data/data_100MB",
-                "src/main/java/data/data_200MB",
-                "src/main/java/data/data_500MB",
-                "src/main/java/data/data_1GB",
+                "src/main/java/data/data_1MB",
         };
-        for (String s : pathArray) {
-            System.out.println("Producing " + s);
-            String content = new String(Files.readAllBytes(Path.of(s)));
-            this.messageProdcuer.produceMessage(content);
-        }
+        String content = Files.readString(Path.of("src/main/java/data/data_1MB"));
+        this.messageProdcuer.produceMessage(content);
         this.messageProdcuer.closeConnection();
     }
 }
