@@ -35,7 +35,7 @@ class SerialCollector:
         async with connection:
             queue: AbstractQueue = await self._client.get_queue(
                 connection, 
-                'content_parse222'
+                'content_parse2'
             )
             async with queue.iterator() as queue_iter:
                 async for message in queue_iter:
@@ -43,6 +43,7 @@ class SerialCollector:
                     await self._consumer.consume(message)
                     end: float = time.perf_counter()
                     print(f'Overall time: {end-start}')
+                    await message.ack()
                     if queue.name in message.body.decode():
                         break
                     

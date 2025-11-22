@@ -2,8 +2,12 @@ import asyncio
 from asyncio import AbstractEventLoop, Task
 from typing import Generator
 from collections import Counter
-
 from concurrent.futures import InterpreterPoolExecutor
+
+from aio_pika.abc import (
+    AbstractMessage,
+    AbstractConnection,
+)
 
 from client import MessageClient
 from shared.message_processor import MessageProcessor
@@ -37,7 +41,12 @@ class ParallelConsumer:
         self._text_splitter = text_splitter
         self._message_producer = message_producer
     
-    async def consume(self, message, connection) -> None:
+    async def consume(
+        self, 
+        message: AbstractMessage, 
+        connection: AbstractConnection,
+    ) -> None:
+        
         count: int = self._worker_counter.get() 
         loop: AbstractEventLoop = asyncio.get_running_loop()
         executor: InterpreterPoolExecutor = InterpreterPoolExecutor(
@@ -86,7 +95,9 @@ class ParallelConsumer:
                     
         counter = Counter(all_top_words)
         merged_result['top_5'] = [word for word, _ in counter.most_common(5)]
+        print(f'pre-merged result: {merged_result}')
         await self._message_producer.produce(merged_result, connection)
+        print('message sent to aggregator')
                     
     async def _run_task(
         self, 
