@@ -29,7 +29,6 @@ class ParallelCollector:
         
     async def consume(self) -> None:
         message: AbstractMessage
-        
         connection: AbstractRobustConnection = (
             await self._client.get_connection()
         )
@@ -41,7 +40,7 @@ class ParallelCollector:
             async with queue.iterator() as queue_iter:
                 async for message in queue_iter:
                     start: float = time.perf_counter()
-                    await self._consumer.consume(message)
+                    await self._consumer.consume(message, connection)
                     end: float = time.perf_counter()
                     print(f'Overall time: {end-start}')
                     await message.ack()

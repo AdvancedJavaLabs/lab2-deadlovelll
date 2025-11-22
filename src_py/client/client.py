@@ -3,6 +3,7 @@ from aio_pika.abc import (
     AbstractRobustConnection, 
     AbstractQueue,
     AbstractChannel,
+    AbstractExchange,
 )
 
 
@@ -25,6 +26,7 @@ class MessageClient:
     ) -> AbstractQueue:
         
         channel: AbstractChannel = await connection.channel()
+        await channel.set_qos(prefetch_count=1)
         queue: AbstractQueue = await channel.declare_queue(
             queue_name,
             auto_delete=False,
@@ -32,3 +34,17 @@ class MessageClient:
         )
         
         return queue
+    
+    async def get_exchnage(
+        self,
+        connection: AbstractRobustConnection,
+        exchange_name: str,
+    ) -> AbstractExchange:
+        
+        channel: AbstractChannel = await connection.channel()
+        exchange: AbstractExchange = await channel.declare_exchange(
+            exchange_name, 
+            aio_pika.ExchangeType.FANOUT
+        )
+        
+        return exchange

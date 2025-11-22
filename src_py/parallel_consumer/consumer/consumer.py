@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import AbstractEventLoop, Task
 from typing import Generator
+from collections import Counter
 
 from concurrent.futures import InterpreterPoolExecutor
 
@@ -8,6 +9,7 @@ from client import MessageClient
 from shared.message_processor import MessageProcessor
 from parallel_consumer.worker_count import WorkerCountGetter
 from shared.text_splitter import TextSplitter
+from shared.message_producer import MessageProducer
 
 
 class ParallelConsumer:
@@ -17,6 +19,7 @@ class ParallelConsumer:
         '_message_processor',
         '_worker_counter',
         '_text_splitter',
+        '_message_producer',
     )
     
     def __init__(
@@ -25,14 +28,16 @@ class ParallelConsumer:
         message_processor: MessageProcessor = MessageProcessor(),
         worker_counter: WorkerCountGetter = WorkerCountGetter(),
         text_splitter: TextSplitter = TextSplitter(),
+        message_producer: MessageProducer = MessageProducer(),
     ) -> None:
         
         self._client = client
         self._message_processor = message_processor
         self._worker_counter = worker_counter
         self._text_splitter = text_splitter
+        self._message_producer = message_producer
     
-    async def consume(self, message) -> None:
+    async def consume(self, message, connection) -> None:
         count: int = self._worker_counter.get() 
         loop: AbstractEventLoop = asyncio.get_running_loop()
         executor: InterpreterPoolExecutor = InterpreterPoolExecutor(
@@ -63,10 +68,26 @@ class ParallelConsumer:
         for task in tasks:  
             result = task.result()
             results.append(result)
-        print('tasks performed')
-        for result in results:
-            print(result)
             
+        merged_result = {
+            'word_count': 0,
+            'bad_words': 0,
+            'names': 0,
+            'top_5': []
+        }
+
+        all_top_words = []
+
+        for r in results:
+            merged_result['word_count'] += r['word_count']
+            merged_result['bad_words'] += r['bad_words']
+            merged_result['names'] += r['names']
+            all_top_words.extend(r['top_5'])
+                    
+        counter = Counter(all_top_words)
+        merged_result['top_5'] = [word for word, _ in counter.most_common(5)]
+        await self._message_producer.produce(merged_result, connection)
+                    
     async def _run_task(
         self, 
         loop: AbstractEventLoop, 
