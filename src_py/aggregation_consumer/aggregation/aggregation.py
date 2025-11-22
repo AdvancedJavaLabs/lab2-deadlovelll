@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 from aio_pika.abc import (
     AbstractRobustConnection, 
@@ -8,10 +7,10 @@ from aio_pika.abc import (
 )
 
 from client import MessageClient
-from serial_consumer.consumer import SerialConsumer
+from aggregation_consumer.consumer import AggregationConsumer
 
 
-class AggregationConsumer:
+class AggregationCollector:
     
     __slots__ = (
         '_consumer',
@@ -20,7 +19,7 @@ class AggregationConsumer:
     
     def __init__(
         self,
-        consumer: SerialConsumer = SerialConsumer(),
+        consumer: AggregationConsumer = AggregationConsumer(),
         client: MessageClient = MessageClient(),
     ) -> None:
         
@@ -45,5 +44,5 @@ class AggregationConsumer:
                         break
                     
 if __name__ == '__main__':
-    collector = AggregationConsumer()
+    collector = AggregationCollector()
     asyncio.run(collector.consume())
