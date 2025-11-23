@@ -11,3 +11,7 @@ dependencies = [
     "spacy>=3.7.5",
     "uvloop>=0.21.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["python_consumer*"]

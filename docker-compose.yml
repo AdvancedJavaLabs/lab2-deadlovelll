@@ -9,6 +9,54 @@ services:
 #      - rabbitmq
 #    command: ["gradle", "run"]
 
+  consumer_1:
+    build:
+      context: python_consumer
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      - rabbitmq
+    environment:
+      PYTHONPATH: "./"
+    command: ["python", "parallel_consumer/parallel/parallel.py"]
+  
+  consumer_2:
+    build:
+      context: python_consumer
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    depends_on:
+      - consumer_1
+    environment:
+      PYTHONPATH: "./"
+    command: ["python", "parallel_consumer/parallel/parallel.py"]
+
+  consumer_3:
+    build:
+      context: python_consumer
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    depends_on:
+      - consumer_2
+    environment:
+      PYTHONPATH: "./"
+    command: ["python", "parallel_consumer/parallel/parallel.py"]
+
+  consumer_4:
+    build:
+      context: python_consumer
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    depends_on:
+      - consumer_3
+    environment:
+      PYTHONPATH: "./"
+    command: ["python", "parallel_consumer/parallel/parallel.py"]
+
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: rabbitmq
