@@ -27,7 +27,7 @@ public class Producer {
             KeyManagementException
     {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri("amqp://guest:guest@localhost:5672");
+        factory.setUri("amqp://guest:guest@rabbitmq:5672");
         Connection conn = factory.newConnection();
         Channel channel = conn.createChannel();
 

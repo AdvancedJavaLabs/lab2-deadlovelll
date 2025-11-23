@@ -1,6 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.9.20"
+    java
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "org.itmo"
@@ -22,9 +23,13 @@ tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
+application {
+    mainClass.set("Main")
 }
 
-application {
-    mainClass.set("MainKt")
+tasks.shadowJar {
+    archiveFileName.set("app.jar")
+    manifest {
+        attributes["Main-Class"] = "Main"
+    }
 }

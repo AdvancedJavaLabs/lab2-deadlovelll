@@ -1,5 +1,5 @@
 services:
-  app:
+  java_producer:
     build:
       context: java_prodcuer
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
       - consumer_3
       - consumer_4
       - rabbitmq
-    command: ["gradle", "run"]
+    command: ["sh", "-c", "sleep 5 && java -jar app.jar"]
 
   consumer_1:
     build:
@@ -23,6 +23,8 @@ services:
       - rabbitmq
     environment:
       PYTHONPATH: "./"
+    volumes:
+      - shared_results:/app/results
     command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
   
   consumer_2:
@@ -36,6 +38,8 @@ services:
       - rabbitmq
     environment:
       PYTHONPATH: "./"
+    volumes:
+      - shared_results:/app/results
     command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   consumer_3:
@@ -49,6 +53,8 @@ services:
       - rabbitmq
     environment:
       PYTHONPATH: "./"
+    volumes:
+      - shared_results:/app/results
     command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   consumer_4:
@@ -62,6 +68,8 @@ services:
       - rabbitmq
     environment:
       PYTHONPATH: "./"
+    volumes:
+      - shared_results:/app/results
     command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   rabbitmq:
@@ -80,6 +88,7 @@ services:
 
 volumes:
   rabbitmq_data:
+  shared_results:
 
 networks:
   appnet:
