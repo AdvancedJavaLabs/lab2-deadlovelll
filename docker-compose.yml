@@ -7,11 +7,8 @@ services:
       - "8000:8000"
     depends_on:
       - consumer_1
-      - consumer_2
-      - consumer_3
-      - consumer_4
       - rabbitmq
-    command: ["sh", "-c", "sleep 5 && java -jar app.jar"]
+    command: ["sh", "-c", "sleep 5 && java -Xmx1g -jar app.jar"]
 
   consumer_1:
     build:
