@@ -26,3 +26,4 @@ class StatFinalizer:
         })
         sentiment_percent = self._sentiment_getter.get(file_data)
         file_data['stats']['sentiment'] = sentiment_percent
+        print(f'task with id {file_data['taskId']} finished')
