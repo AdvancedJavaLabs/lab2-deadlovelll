@@ -1,4 +1,3 @@
-from asyncio import Lock
 import json
 from typing import Union
 from pathlib import Path
@@ -47,12 +46,10 @@ class AggregationConsumer:
         all: int = data['all']
         filepath: str = f"results/{task_id}.json"
         file: Path = Path(filepath)
-        lock: Lock = Lock()
         
         print(f'task id is {task_id}')
             
-        async with lock:
-            if not file.exists():
-                self._file_writer.write(all, filepath, data)
-            else:
-                self._file_updater.update(filepath, data)
+        if not file.exists():
+            self._file_writer.write(all, filepath, data)
+        else:
+            self._file_updater.update(filepath, data)

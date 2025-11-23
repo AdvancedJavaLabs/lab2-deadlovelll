@@ -27,6 +27,7 @@ class FileWriter:
         print(file_data)
         with open(filepath, 'a') as f:
             if all == 1:
+                file_data['stats']['start_time'] = file_data['start']
                 self._stat_finalizer.finalize(file_data, file_data['taskId'])
             data = {
                 'all': all,

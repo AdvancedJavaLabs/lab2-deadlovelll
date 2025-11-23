@@ -1,7 +1,6 @@
 from collections import Counter
+import re
 from typing import Union
-
-from tqdm import tqdm
 
 from shared.profane_detector import ProfaneDetecor
 from shared.name_detector import NameDetector
@@ -9,6 +8,8 @@ from shared.name_detector import NameDetector
 
 class MessageProcessor:
     
+    WORD_RE = re.compile(r"[a-zA-Z]+")
+        
     __slots__ = (
         '_profane_detector',
         '_name_detector',
@@ -28,33 +29,36 @@ class MessageProcessor:
         text: list[str],
     ) -> dict[str, Union[int, dict[str, int]]]:
         
-        text.sort(key=lambda x: len(x))
-        
-        result: dict[str, Union[int, list[tuple[str, int]]]] = {
-            'word_count': 0,
-            'bad_words': 0,
-            'names': 0,
-            'top_5': [],
-        }
-        next_text: list[str] = []
-        
-        for word in tqdm(text):
-            splitted_word: list[str] = word.split('_')
-            for subword in splitted_word:
+        counter = Counter()
+        word_count = 0
+        bad_words = 0
+        names = 0
+
+        for word in text:
+            for subword in word.split('_'):
                 if not subword:
                     continue
-                result['word_count'] += 1
-                is_profane: bool = self._profane_detector.is_profane(word)
-                if is_profane:
-                    result['bad_words'] += 1
-                is_name: bool = self._name_detector.is_name(subword)
-                if is_name:
-                    result['names'] += 1
+                w = subword.lower()
 
-                next_text.append(subword)
-                
-        counter: Counter = Counter(next_text)
-        top_5: list[tuple[str, int]] = counter.most_common(5)
-        result['top_5'] = top_5
-        
-        return result
+                match = self.WORD_RE.fullmatch(w)
+                if not match:
+                    continue
+                w = match.group()
+
+                word_count += 1
+                counter[w] += 1
+
+                if self._profane_detector.is_profane(w):
+                    bad_words += 1
+
+                if self._name_detector.is_name(w):
+                    names += 1
+
+        top_5 = counter.most_common(5)
+
+        return {
+            "word_count": word_count,
+            "bad_words": bad_words,
+            "names": names,
+            "top_5": top_5
+        }
