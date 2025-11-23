@@ -32,7 +32,7 @@ class MessageClient:
             auto_delete=False,
             durable=True
         )
-        
+                
         return queue
     
     async def get_exchnage(
@@ -42,9 +42,4 @@ class MessageClient:
     ) -> AbstractExchange:
         
         channel: AbstractChannel = await connection.channel()
-        exchange: AbstractExchange = await channel.declare_exchange(
-            exchange_name, 
-            aio_pika.ExchangeType.FANOUT
-        )
-        
-        return exchange
+        return channel.default_exchange

@@ -26,7 +26,9 @@ class MessageProducer:
         
         exchange: AbstractExchange = await self._client.get_exchnage(
             connection,
-            'message_exchange',
+            "message_exchange",
         )
-        message = aio_pika.Message(body=json.dumps(data).encode('utf-8'))
-        await exchange.publish(message, '')
+        message = aio_pika.Message(
+            body=json.dumps(data).encode("utf-8")
+        )
+        await exchange.publish(message, routing_key="message_exchange")

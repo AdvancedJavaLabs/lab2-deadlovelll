@@ -1,4 +1,5 @@
 from asyncio import Lock
+import json
 from pathlib import Path
 
 from client import MessageClient
@@ -33,9 +34,9 @@ class AggregationConsumer:
     
     async def consume(self, message: AbstractMessage) -> None:
         print('message received')
-        data = message.body.decode('utf-8')
-        stat = data['stat']
-        task_id: str = data['task_id']
+        data = json.loads(message.body.decode('utf-8'))
+        print(data)
+        task_id: str = data['taskId']
         all: int = data['all']
         filepath: str = f"results/{task_id}.json"
         file: Path = Path(filepath)
@@ -45,6 +46,6 @@ class AggregationConsumer:
             
         async with lock:
             if not file.exists():
-                self._file_writer.write(all, filepath, stat)
+                self._file_writer.write(all, filepath, data)
             else:
-                self._file_updater.update(filepath, stat)
+                self._file_updater.update(filepath, data)

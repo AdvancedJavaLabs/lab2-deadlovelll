@@ -31,6 +31,7 @@ class AggregationCollector:
         connection: AbstractRobustConnection = (
             await self._client.get_connection()
         )
+        print('started aggregation consumer')
         async with connection:
             queue: AbstractQueue = await self._client.get_queue(
                 connection, 

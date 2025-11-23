@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop, Task
+import json
 from typing import Generator
 from concurrent.futures import InterpreterPoolExecutor
 
@@ -58,7 +59,8 @@ class ParallelConsumer:
         print('message received')
         tasks: list[Task] = []
         results: list[dict[str, int | dict[str, int]]] = []
-        blocks: list[str] = message.body.decode('utf-8').split('\n')
+        decoded_msg = json.loads(message.body.decode('utf-8'))
+        blocks: list[str] = decoded_msg['value'].split('\n')
         blocks = [
             b.split('\t', 1)[1] 
             if '\t' in b else b 
@@ -80,10 +82,15 @@ class ParallelConsumer:
         for task in tasks:  
             result = task.result()
             results.append(result)
-            
+        
         merged_result = self._result_merger.merge(results)
+        agg_message = {
+            'taskId': decoded_msg['taskId'],
+            'all': decoded_msg['all'],
+            'stats': merged_result,
+        }
         print(f'pre-merged result: {merged_result}')
-        await self._message_producer.produce(merged_result, connection)
+        await self._message_producer.produce(agg_message, connection)
         print('message sent to aggregator')
                     
     async def _run_task(
