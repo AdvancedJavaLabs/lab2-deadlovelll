@@ -23,7 +23,6 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(20)
 }
 
 application {

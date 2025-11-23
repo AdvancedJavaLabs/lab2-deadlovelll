@@ -13,7 +13,7 @@ class MessageClient:
         self,
     ) -> None:
         
-        self.address: str = 'amqp://guest:guest@localhost:5672'
+        self.address: str = "amqp://guest:guest@rabbitmq:5672"
         
     async def get_connection(self) -> AbstractRobustConnection:
         connection = await aio_pika.connect_robust(self.address)

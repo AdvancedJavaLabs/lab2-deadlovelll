@@ -1,13 +1,17 @@
 services:
-#  app:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - rabbitmq
-#    command: ["gradle", "run"]
+  app:
+    build:
+      context: java_prodcuer
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - consumer_1
+      - consumer_2
+      - consumer_3
+      - consumer_4
+      - rabbitmq
+    command: ["gradle", "run"]
 
   consumer_1:
     build:
@@ -19,7 +23,7 @@ services:
       - rabbitmq
     environment:
       PYTHONPATH: "./"
-    command: ["python", "parallel_consumer/parallel/parallel.py"]
+    command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
   
   consumer_2:
     build:
@@ -29,9 +33,10 @@ services:
       - "8002:8002"
     depends_on:
       - consumer_1
+      - rabbitmq
     environment:
       PYTHONPATH: "./"
-    command: ["python", "parallel_consumer/parallel/parallel.py"]
+    command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   consumer_3:
     build:
@@ -41,9 +46,10 @@ services:
       - "8003:8003"
     depends_on:
       - consumer_2
+      - rabbitmq
     environment:
       PYTHONPATH: "./"
-    command: ["python", "parallel_consumer/parallel/parallel.py"]
+    command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   consumer_4:
     build:
@@ -53,9 +59,10 @@ services:
       - "8004:8004"
     depends_on:
       - consumer_3
+      - rabbitmq
     environment:
       PYTHONPATH: "./"
-    command: ["python", "parallel_consumer/parallel/parallel.py"]
+    command: ["sh", "-c", "sleep 5 && python parallel_consumer/parallel/parallel.py"]
 
   rabbitmq:
     image: rabbitmq:3.13-management
@@ -73,3 +80,7 @@ services:
 
 volumes:
   rabbitmq_data:
+
+networks:
+  appnet:
+    driver: bridge
