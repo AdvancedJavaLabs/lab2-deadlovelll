@@ -1,0 +1,15 @@
+.DS_Store
+
+.idea/
+*.iml
+
+.gradle/
+build/
+bin/
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+*.log
